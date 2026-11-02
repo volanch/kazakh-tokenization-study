@@ -1,5 +1,5 @@
 {
-  "run_utc": "2026-10-23T11:17:29.638242+00:00",
+  "run_utc": "2026-10-25T13:49:36.840860+00:00",
   "dataset": "openlanguagedata/flores_plus",
   "split": "dev",
   "dataset_revision_requested": "main",
@@ -227,10 +227,21 @@
     "tokenizers": "0.23.3",
     "huggingface_hub": "1.33.0"
   },
+  "pricing": {
+    "provider": "Nscale",
+    "currency": "USD",
+    "input_price_per_million_tokens": {
+      "Qwen/Qwen3-8B": 0.07,
+      "meta-llama/Llama-3.1-8B-Instruct": 0.06
+    },
+    "basis": "raw sentence text only; excludes prompts, chat templates, generated output, and provider-specific overhead"
+  },
   "outputs": [
     "token_counts.csv",
     "summary.csv",
-    "alignment_audit.csv"
+    "cost_estimates.csv",
+    "alignment_audit.csv",
+    "../data/used_texts.csv"
   ],
-  "note": "Requested refs are recorded; pin immutable commits for final reproducibility. No source sentence text is written to outputs."
+  "note": "Cost estimates are calculated only when the matching provider input rate is supplied. They are raw-text input estimates, not measured API bills. Pin immutable commits for final reproducibility. data/used_texts.csv contains source sentences and should remain local; do not publish it to GitHub."
 }

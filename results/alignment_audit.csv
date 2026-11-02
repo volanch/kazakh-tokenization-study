@@ -1,4 +1,4 @@
-item_id,present_eng_Latn,present_kaz_Cyrl,present_rus_Cyrl,complete_triplet,selected_for_run,exclusion_reason
+﻿item_id,present_eng_Latn,present_kaz_Cyrl,present_rus_Cyrl,complete_triplet,selected_for_run,exclusion_reason
 0,True,True,True,True,True,
 1,True,True,True,True,True,
 2,True,True,True,True,True,

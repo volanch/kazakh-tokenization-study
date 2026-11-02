@@ -1,4 +1,4 @@
-item_id,language_code,language,model_id,word_count_whitespace,character_count_nfc,token_count_no_special_tokens,tokens_per_word,characters_per_token
+﻿item_id,language_code,language,model_id,word_count_whitespace,character_count_nfc,token_count_no_special_tokens,tokens_per_word,characters_per_token
 0,eng_Latn,English,Qwen/Qwen3-8B,43,264,49,1.1395348837209303,5.387755102040816
 0,eng_Latn,English,meta-llama/Llama-3.1-8B-Instruct,43,264,49,1.1395348837209303,5.387755102040816
 0,kaz_Cyrl,Kazakh,Qwen/Qwen3-8B,36,301,168,4.666666666666667,1.7916666666666667

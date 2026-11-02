@@ -1,4 +1,4 @@
-language_code,language,model_id,n_items,mean_tokens_per_word,median_tokens_per_word,stdev_tokens_per_word
+﻿language_code,language,model_id,n_items,mean_tokens_per_word,median_tokens_per_word,stdev_tokens_per_word
 eng_Latn,English,Qwen/Qwen3-8B,200,1.3132747151650055,1.2627877237851663,0.19838347987852253
 eng_Latn,English,meta-llama/Llama-3.1-8B-Instruct,200,1.275818362526903,1.2320512820512821,0.16203813638754241
 kaz_Cyrl,Kazakh,Qwen/Qwen3-8B,200,4.756984220355685,4.766968325791855,0.5690532526796485
