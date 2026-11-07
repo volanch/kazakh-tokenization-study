@@ -1,5 +1,5 @@
 {
-  "run_utc": "2026-11-07T11:31:35.222554+00:00",
+  "run_utc": "2026-11-07T18:01:05.652666+00:00",
   "dataset": "openlanguagedata/flores_plus",
   "split": "dev",
   "dataset_revision_requested": "main",
@@ -1025,11 +1025,11 @@
     "huggingface_hub": "1.33.0"
   },
   "pricing": {
-    "provider": "unspecified",
+    "provider": "Nscale",
     "currency": "USD",
     "input_price_per_million_tokens": {
-      "Qwen/Qwen3-8B": null,
-      "meta-llama/Llama-3.1-8B-Instruct": null
+      "Qwen/Qwen3-8B": 0.07,
+      "meta-llama/Llama-3.1-8B-Instruct": 0.06
     },
     "basis": "raw sentence text only; excludes prompts, chat templates, generated output, and provider-specific overhead"
   },
