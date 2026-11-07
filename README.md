@@ -22,21 +22,15 @@ This repository does not contain FLORES+ sentence text. The script loads the off
    hf auth login
    ```
 
-5. Run the pilot over 20 aligned sentence IDs:
+5. Run the full baseline comparison over all 997 FLORES+ dev sentence IDs with the documented input rates:
 
    ```powershell
-   python src/run_tokenization.py --limit 20
+   python src/run_tokenization.py --limit 997 --qwen-input-price-per-million 0.07 --llama-input-price-per-million 0.06 --currency USD --pricing-provider Nscale
    ```
 
 6. Inspect `results/token_counts.csv`, `results/summary.csv`, `results/cost_estimates.csv`, `results/alignment_audit.csv`, and `results/run_manifest.json`. Check the audit for missing or blank rows.
 
-7. If the pilot works, you can make higher limit:
-
-   ```powershell
-   python src/run_tokenization.py --limit 200
-   ```
-
-8. Added only the code, documentation, manifest, and derived count tables to the project repo after checking the current dataset terms and course sharing rules. Kept raw text and local dataset/model caches out of Git.
+7. Keep raw text and local dataset/model caches out of GitHub. Commit only code, documentation, the run manifest, and derived count tables, following the dataset terms and course sharing rules.
 
 ## Models
 
@@ -61,28 +55,13 @@ Texts are NFC-normalized before counting. Chat templates are not applied to benc
 
 ## Estimated processing cost
 
-The script estimates input cost by multiplying raw sentence token counts by input rates you supply for your chosen inference provider. It does not run either LLM or measure translation quality. Use rates from the provider and model version you would actually use.
+The script estimates input cost by multiplying raw sentence token counts by input rates you supply for your chosen inference provider. It does not call an inference provider or measure LLM performance. Use rates from the provider and model version you would actually use.
 
-Example command (replace 0.XX and 0.YY with actual provider rates per million input tokens):
+For the input rates recorded in the project methodology on 25 October 2026, run:
 
-    python src/run_tokenization.py --limit 200 --qwen-input-price-per-million 0.XX --llama-input-price-per-million 0.YY --currency USD --pricing-provider "Provider name"
+    python src/run_tokenization.py --limit 997 --qwen-input-price-per-million 0.07 --llama-input-price-per-million 0.06 --currency USD --pricing-provider Nscale
 
 If a rate is omitted, its estimated cost is left blank in results/cost_estimates.csv. The estimate covers raw FLORES+ sentence text only. It excludes system/user prompt text, chat-template tokens, generated output, and provider-specific overhead, so it is not an actual API bill. The source text remains local under data/used_texts.csv; do not commit it to GitHub.
-
-
-## Kazakh-to-English translation and token-count pilot
-
-`src/translate_kazakh_google.py` uses Google Cloud Translation Basic NMT (`kk` to `en`) for the Kazakh sentences in local `data/used_texts.csv`, saves the translation results under `data_translate/`, then counts translated English tokens with the Qwen3-8B and Llama 3.1 8B Instruct tokenizers. It also counts the existing aligned FLORES+ English reference text for comparison. This measures English translation output token counts, not Kazakh tokenization efficiency. It estimates translation charges from input characters and an assumed remaining monthly free character allowance; verify actual project usage and current billing.
-
-Enable Cloud Translation in a Google Cloud project, create and restrict an API key to the Translation API, and keep it out of the repository. In the current PowerShell window, set it without writing it into source code:
-
-```powershell
-$env:GOOGLE_TRANSLATE_API_KEY = Read-Host "Paste Google API key"
-& "$venv\Scripts\python.exe" src\translate_kazakh_google.py --limit 20 --qwen-input-price-per-million 0.07 --llama-input-price-per-million 0.06
-```
-
-The default translation estimate assumes 500,000 free NMT characters remain for the current month and uses $20 per million characters above that allowance. Change `--free-characters-remaining` to reflect other usage on the Google Cloud project. If the output already exists, use `--resume` to skip completed IDs or `--overwrite` to translate again. The output CSV contains restricted dataset text and stays in the ignored `data_translate/` folder; do not publish it.
-
 
 
 ## Custom Kazakh tokenizer comparison
@@ -97,3 +76,7 @@ From the project root in PowerShell, train the tokenizer and compare its counts 
 ```
 
 The comparison writes `results/custom_qwen_comparison.csv` and `results/custom_qwen_summary.csv`. Both tokenizers process the same NFC-normalized Kazakh text without special tokens. The SentencePiece tokenizer is an independent tokenizer; it is not plugged into Qwen, so its lower count is not an observed reduction in Qwen API usage or an actual provider bill. Keep `data/used_texts.csv`, the CC-100 corpus, and any restricted source text out of public Git history.
+
+
+
+
