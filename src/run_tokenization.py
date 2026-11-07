@@ -1,7 +1,4 @@
-"""Compare Qwen3 and Llama 3.1 tokenizer counts on FLORES+ dev sentences.
-
-This script stores item IDs and derived counts, not dataset sentence text.
-"""
+"""Compare Qwen3 and Llama 3.1 tokenizer counts on FLORES+ dev sentences."""
 
 from __future__ import annotations
 
@@ -22,6 +19,7 @@ from transformers import AutoTokenizer
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
+DATA = ROOT / "data"
 LANGUAGES = {
     "eng_Latn": "English",
     "kaz_Cyrl": "Kazakh",
@@ -39,6 +37,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dataset-revision", default="main", help="FLORES+ revision; pin a commit for the final run.")
     parser.add_argument("--qwen-revision", default="main", help="Qwen tokenizer revision; pin a commit for the final run.")
     parser.add_argument("--llama-revision", default="main", help="Llama tokenizer revision; pin a commit for the final run.")
+    parser.add_argument("--qwen-input-price-per-million", type=float, default=None, help="Chosen provider rate per 1M input tokens.")
+    parser.add_argument("--llama-input-price-per-million", type=float, default=None, help="Chosen provider rate per 1M input tokens.")
+    parser.add_argument("--currency", default="USD", help="Currency used by supplied provider rates.")
+    parser.add_argument("--pricing-provider", default="unspecified", help="Provider or pricing source for supplied rates.")
     return parser.parse_args()
 
 
@@ -143,10 +145,41 @@ def summarize(records):
     return summaries
 
 
+def estimate_costs(records, rates: dict[str, float | None], currency: str, provider: str):
+    grouped = defaultdict(int)
+    for row in records:
+        grouped[(row["model_id"], row["language_code"], row["language"])] += int(row["token_count_no_special_tokens"])
+    rows = []
+    totals = defaultdict(int)
+    for (model_id, code, language), token_total in sorted(grouped.items()):
+        totals[model_id] += token_total
+        rate = rates[model_id]
+        rows.append({
+            "language_code": code, "language": language, "model_id": model_id,
+            "input_tokens_raw_text": token_total,
+            "price_per_million_input_tokens": rate if rate is not None else "",
+            "currency": currency,
+            "estimated_input_cost": token_total / 1_000_000 * rate if rate is not None else "",
+            "pricing_provider": provider,
+        })
+    for model_id, token_total in sorted(totals.items()):
+        rate = rates[model_id]
+        rows.append({
+            "language_code": "ALL", "language": "All languages", "model_id": model_id,
+            "input_tokens_raw_text": token_total,
+            "price_per_million_input_tokens": rate if rate is not None else "",
+            "currency": currency,
+            "estimated_input_cost": token_total / 1_000_000 * rate if rate is not None else "",
+            "pricing_provider": provider,
+        })
+    return rows
+
+
 def write_csv(path: Path, rows: list[dict]) -> None:
     if not rows:
         raise ValueError(f"No rows to write to {path}")
-    with path.open("w", newline="", encoding="utf-8") as handle:
+    # UTF-8 with BOM lets Excel on Windows detect Cyrillic/Kazakh text correctly.
+    with path.open("w", newline="", encoding="utf-8-sig") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
@@ -156,15 +189,39 @@ def main() -> None:
     args = parse_args()
     if args.limit < 1:
         raise SystemExit("--limit must be at least 1")
+    for name in ("qwen_input_price_per_million", "llama_input_price_per_million"):
+        rate = getattr(args, name)
+        if rate is not None and rate < 0:
+            raise SystemExit(f"Price for {name} cannot be negative")
 
     RESULTS.mkdir(parents=True, exist_ok=True)
+    DATA.mkdir(parents=True, exist_ok=True)
     aligned_rows, audit = load_aligned_rows(args.dataset_revision, args.limit)
     tokenizers = get_tokenizers(args.qwen_revision, args.llama_revision)
     records = measure(aligned_rows, tokenizers)
     summaries = summarize(records)
+    rates = {
+        "Qwen/Qwen3-8B": args.qwen_input_price_per_million,
+        "meta-llama/Llama-3.1-8B-Instruct": args.llama_input_price_per_million,
+    }
+    cost_rows = estimate_costs(records, rates, args.currency, args.pricing_provider)
+
+    # Keep the exact aligned source sentences used for this run locally in data/.
+    # The dataset text is subject to FLORES+ access and redistribution conditions.
+    used_text_rows = [
+        {
+            "item_id": item_id,
+            "english": texts["eng_Latn"],
+            "kazakh": texts["kaz_Cyrl"],
+            "russian": texts["rus_Cyrl"],
+        }
+        for item_id, texts in aligned_rows
+    ]
+    write_csv(DATA / "used_texts.csv", used_text_rows)
 
     write_csv(RESULTS / "token_counts.csv", records)
     write_csv(RESULTS / "summary.csv", summaries)
+    write_csv(RESULTS / "cost_estimates.csv", cost_rows)
     write_csv(RESULTS / "alignment_audit.csv", audit)
     manifest = {
         "run_utc": datetime.now(timezone.utc).isoformat(),
@@ -190,11 +247,17 @@ def main() -> None:
             "tokenizers": importlib.metadata.version("tokenizers"),
             "huggingface_hub": importlib.metadata.version("huggingface_hub"),
         },
-        "outputs": ["token_counts.csv", "summary.csv", "alignment_audit.csv"],
-        "note": "Requested refs are recorded; pin immutable commits for final reproducibility. No source sentence text is written to outputs.",
+        "pricing": {
+            "provider": args.pricing_provider,
+            "currency": args.currency,
+            "input_price_per_million_tokens": rates,
+            "basis": "raw sentence text only; excludes prompts, chat templates, generated output, and provider-specific overhead",
+        },
+        "outputs": ["token_counts.csv", "summary.csv", "cost_estimates.csv", "alignment_audit.csv", "../data/used_texts.csv"],
+        "note": "Cost estimates are calculated only when the matching provider input rate is supplied. They are raw-text input estimates, not measured API bills. Pin immutable commits for final reproducibility. data/used_texts.csv contains source sentences and should remain local; do not publish it to GitHub.",
     }
     (RESULTS / "run_manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"Processed {len(aligned_rows)} aligned IDs; wrote count tables and manifest under {RESULTS}.")
+    print(f"Processed {len(aligned_rows)} aligned IDs; wrote token counts, cost estimates, and manifest under {RESULTS}.")
 
 
 if __name__ == "__main__":
