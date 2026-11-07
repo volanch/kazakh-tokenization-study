@@ -1,0 +1,7 @@
+﻿language_code,language,model_id,n_items,mean_tokens_per_word,median_tokens_per_word,stdev_tokens_per_word
+eng_Latn,English,Qwen/Qwen3-8B,997,1.262606194886307,1.2083333333333333,0.18753007858538578
+eng_Latn,English,meta-llama/Llama-3.1-8B-Instruct,997,1.239471628223794,1.2,0.15137589345128152
+kaz_Cyrl,Kazakh,Qwen/Qwen3-8B,997,4.79435583881213,4.8,0.5548812154249771
+kaz_Cyrl,Kazakh,meta-llama/Llama-3.1-8B-Instruct,997,4.8071727888613305,4.8,0.6253450804506511
+rus_Cyrl,Russian,Qwen/Qwen3-8B,997,2.456692210728369,2.4285714285714284,0.39783911509046377
+rus_Cyrl,Russian,meta-llama/Llama-3.1-8B-Instruct,997,2.2281351847422117,2.1875,0.33426071684175457

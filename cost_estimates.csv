@@ -1,0 +1,9 @@
+﻿language_code,language,model_id,input_tokens_raw_text,price_per_million_input_tokens,currency,estimated_input_cost,pricing_provider
+eng_Latn,English,Qwen/Qwen3-8B,5626,0.07,USD,0.00039382,Nscale
+kaz_Cyrl,Kazakh,Qwen/Qwen3-8B,16407,0.07,USD,0.0011484900000000003,Nscale
+rus_Cyrl,Russian,Qwen/Qwen3-8B,10146,0.07,USD,0.0007102200000000001,Nscale
+eng_Latn,English,meta-llama/Llama-3.1-8B-Instruct,5467,0.06,USD,0.00032801999999999994,Nscale
+kaz_Cyrl,Kazakh,meta-llama/Llama-3.1-8B-Instruct,16391,0.06,USD,0.00098346,Nscale
+rus_Cyrl,Russian,meta-llama/Llama-3.1-8B-Instruct,9217,0.06,USD,0.00055302,Nscale
+ALL,All languages,Qwen/Qwen3-8B,32179,0.07,USD,0.00225253,Nscale
+ALL,All languages,meta-llama/Llama-3.1-8B-Instruct,31075,0.06,USD,0.0018644999999999998,Nscale

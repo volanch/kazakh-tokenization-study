@@ -1,0 +1,5 @@
+﻿metric,qwen,custom_sentencepiece,change_percent
+sentences,,997,
+total_tokens,79029,63850,19.2069
+mean_tokens_per_sentence,79.2668,64.0421,19.2069
+median_tokens_per_sentence,76,61,
