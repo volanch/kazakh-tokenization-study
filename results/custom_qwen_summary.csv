@@ -2,4 +2,5 @@
 sentences,,997,
 total_tokens,79029,63850,19.2069
 mean_tokens_per_sentence,79.2668,64.0421,19.2069
+sd_tokens_per_sentence,27.7195,23.3461,
 median_tokens_per_sentence,76,61,

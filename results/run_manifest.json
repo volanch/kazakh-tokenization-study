@@ -1,5 +1,5 @@
 {
-  "run_utc": "2026-11-07T18:01:05.652666+00:00",
+  "run_utc": "2026-11-08T12:53:43.481716+00:00",
   "dataset": "openlanguagedata/flores_plus",
   "split": "dev",
   "dataset_revision_requested": "main",
@@ -1018,9 +1018,9 @@
   "word_count": "Python whitespace split",
   "special_tokens": "excluded",
   "software_versions": {
-    "python": "3.14.0",
+    "python": "3.14.10",
     "datasets": "4.8.5",
-    "transformers": "5.20.2",
+    "transformers": "5.22.1",
     "tokenizers": "0.23.3",
     "huggingface_hub": "1.33.0"
   },
