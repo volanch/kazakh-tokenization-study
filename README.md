@@ -28,7 +28,7 @@ python -m pip install -r requirements.txt
 hf auth login
 ```
 
-The scripts load tokenizer files only; an 8B model download and GPU are not required for token counting. Never place a Hugging Face token in this repository.
+The scripts load tokenizer files only; an 8B model download and GPU are not required for token counting.
 
 ## Reproduce the baseline CSV files
 
@@ -118,7 +118,7 @@ The audit command should return no rows when all selected items have complete tr
 
 ## Data and repository hygiene
 
-Do not upload `data/used_texts.csv`, FLORES+ or CC-100 source text, local model caches, credentials, or Hugging Face tokens. The CC-100 card lists its license as unknown; verify the applicable terms before use or redistribution. Follow the FLORES+ access conditions and course sharing rules when handling its source text. Upload aggregate counts only if permitted by the course rules.
+Do not upload `data/used_texts.csv`, FLORES+ or CC-100 source text, local model caches, credentials, or Hugging Face tokens. Follow the FLORES+ access conditions and course sharing rules when handling its source text.
 
 ## Sources
 
